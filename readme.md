@@ -2,6 +2,8 @@
 
 Welcome to the **Auto Typing Tool**, an advanced, fast, and optimized solution for automated typing tasks, built with Python! This tool is designed to save time and effort, offering unmatched speed and precision. Whether you need a bot for text simulation or just an auto typer to handle repetitive tasks, this is the fastest and best choice.
 
+![Auto Typing GUI Screenshot](auto-typer-screen.png)
+
 ## Features
 
 ### 🚀 Speed and Performance

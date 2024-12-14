@@ -13,6 +13,7 @@ max_wpm = 60
 typing_thread = None
 keyboard = Controller()
 
+
 def auto_type(text_widget):
     """Simulates typing with optimized speed using pynput."""
     global is_typing, current_position, min_wpm, max_wpm
@@ -20,16 +21,19 @@ def auto_type(text_widget):
     while current_position < len(text):
         if not is_typing:
             break
-        keyboard.type(text[current_position])  # Type the current character
+
+        char = text[current_position]  # Get the current character
+        keyboard.type(char)  # Type the current character
         current_position += 1  # Move to the next character
 
         # WPM delay: Convert WPM to delay per character (5 characters per word)
         delay = 60 / (random.uniform(min_wpm, max_wpm) * 5)
         time.sleep(delay)
 
+
 def start_typing(text_widget, min_wpm_input, max_wpm_input):
     """Starts the typing process."""
-    global is_typing, typing_thread, min_wpm, max_wpm
+    global is_typing, typing_thread, min_wpm, max_wpm, current_position
     if is_typing:
         return  # Prevent starting again if already typing
     try:
@@ -47,12 +51,14 @@ def start_typing(text_widget, min_wpm_input, max_wpm_input):
     except ValueError:
         update_status("Please enter valid WPM values.")
 
+
 def pause_typing():
     """Pauses the typing process."""
     global is_typing
     if is_typing:
         is_typing = False
         update_status("Typing paused.")
+
 
 def continue_typing():
     """Continues the typing process."""
@@ -68,12 +74,14 @@ def continue_typing():
             typing_thread.start()
         update_status("Typing continued.")
 
+
 def stop_typing():
     """Stops the typing process and resets progress."""
     global is_typing, current_position
     is_typing = False
     current_position = 0
     update_status("Typing stopped. Progress reset.")
+
 
 def increase_speed(min_wpm_input, max_wpm_input):
     """Increases typing speed by 1.5x."""
@@ -91,9 +99,28 @@ def increase_speed(min_wpm_input, max_wpm_input):
     except ValueError:
         update_status("Please enter valid WPM values.")
 
+
+def decrease_speed(min_wpm_input, max_wpm_input):
+    """Decreases typing speed by 1.5x."""
+    global min_wpm, max_wpm
+    try:
+        min_wpm = int(min_wpm_input.get())
+        max_wpm = int(max_wpm_input.get())
+        min_wpm = max(1, int(min_wpm / 1.5))  # Ensure minimum WPM is 1
+        max_wpm = max(1, int(max_wpm / 1.5))
+        min_wpm_input.delete(0, tk.END)
+        min_wpm_input.insert(0, str(min_wpm))
+        max_wpm_input.delete(0, tk.END)
+        max_wpm_input.insert(0, str(max_wpm))
+        update_status(f"Speed decreased: Min WPM = {min_wpm}, Max WPM = {max_wpm}")
+    except ValueError:
+        update_status("Please enter valid WPM values.")
+
+
 def update_status(message):
     """Updates the status label."""
     status_label.config(text=message)
+
 
 # Create the GUI
 root = tk.Tk()
@@ -140,7 +167,12 @@ stop_button.grid(row=3, column=3, padx=10, pady=10)
 increase_speed_button = tk.Button(
     root, text="Increase Speed", command=lambda: increase_speed(min_wpm_input, max_wpm_input)
 )
-increase_speed_button.grid(row=4, column=1, columnspan=2, padx=10, pady=10)
+increase_speed_button.grid(row=4, column=1, padx=10, pady=10)
+
+decrease_speed_button = tk.Button(
+    root, text="Decrease Speed", command=lambda: decrease_speed(min_wpm_input, max_wpm_input)
+)
+decrease_speed_button.grid(row=4, column=2, padx=10, pady=10)
 
 # Status Label
 status_label = tk.Label(root, text="Status: Ready", fg="blue")
